@@ -1,25 +1,14 @@
 import * as vscode from "vscode";
 
 /**
- * Get Warp URI for opening in a new window with specified path
+ * Generate Warp URI for the specified action and path
  * Based on: https://github.com/raycast/extensions/blob/d480d47a5c3271f36134614ecdc49b2d447bccf2/extensions/warp/src/uri.ts
  */
-function getWarpNewWindowUri(path: string): string {
+function getWarpUri(action: "new_window" | "new_tab", path: string): string {
   // Use warp:// scheme for standard Warp app
   // Could be extended to support warppreview:// for preview builds
   const scheme = "warp://";
-  return `${scheme}action/new_window?path=${encodeURIComponent(path)}`;
-}
-
-/**
- * Get Warp URI for opening in a new tab with specified path
- * Based on: https://github.com/raycast/extensions/blob/d480d47a5c3271f36134614ecdc49b2d447bccf2/extensions/warp/src/uri.ts
- */
-function getWarpNewTabUri(path: string): string {
-  // Use warp:// scheme for standard Warp app
-  // Could be extended to support warppreview:// for preview builds
-  const scheme = "warp://";
-  return `${scheme}action/new_tab?path=${encodeURIComponent(path)}`;
+  return `${scheme}action/${action}?path=${encodeURIComponent(path)}`;
 }
 
 /**
@@ -53,14 +42,18 @@ function getWorkspacePath(uri?: vscode.Uri): string {
 }
 
 /**
- * Open Warp terminal in a new window with the specified path
+ * Open Warp terminal with the specified action and path
  */
-async function openWarpInNewWindow(uri?: vscode.Uri): Promise<void> {
+async function openWarp(
+  action: "new_window" | "new_tab",
+  uri?: vscode.Uri
+): Promise<void> {
   try {
     const workspacePath = getWorkspacePath(uri);
-    const warpUri = getWarpNewWindowUri(workspacePath);
+    const warpUri = getWarpUri(action, workspacePath);
+    const actionName = action === "new_window" ? "window" : "tab";
 
-    console.log(`Opening Warp window with path: ${workspacePath}`);
+    console.log(`Opening Warp ${actionName} with path: ${workspacePath}`);
     console.log(`Warp URI: ${warpUri}`);
 
     const success = await vscode.env.openExternal(vscode.Uri.parse(warpUri));
@@ -81,31 +74,17 @@ async function openWarpInNewWindow(uri?: vscode.Uri): Promise<void> {
 }
 
 /**
+ * Open Warp terminal in a new window with the specified path
+ */
+async function openWarpInNewWindow(uri?: vscode.Uri): Promise<void> {
+  return openWarp("new_window", uri);
+}
+
+/**
  * Open Warp terminal in a new tab with the specified path
  */
 async function openWarpInNewTab(uri?: vscode.Uri): Promise<void> {
-  try {
-    const workspacePath = getWorkspacePath(uri);
-    const warpUri = getWarpNewTabUri(workspacePath);
-
-    console.log(`Opening Warp tab with path: ${workspacePath}`);
-    console.log(`Warp URI: ${warpUri}`);
-
-    const success = await vscode.env.openExternal(vscode.Uri.parse(warpUri));
-
-    if (!success) {
-      vscode.window.showErrorMessage(
-        "Failed to open Warp terminal. Make sure Warp is installed and supports URI schemes."
-      );
-    }
-  } catch (error) {
-    console.error("Error opening Warp terminal:", error);
-    vscode.window.showErrorMessage(
-      `Error opening Warp terminal: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`
-    );
-  }
+  return openWarp("new_tab", uri);
 }
 
 export function activate(context: vscode.ExtensionContext) {
