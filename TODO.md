@@ -1,0 +1,2 @@
+- [ ] support warp preview
+- [ ] add launch configurations in sidebar
