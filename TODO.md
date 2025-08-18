@@ -1,2 +1,4 @@
 - [ ] support warp preview
-- [ ] add launch configurations in sidebar
+- [ ] add launch configurations list in sidebar
+- [ ] support search configurations in command platte
+- [ ] support open active tab in warp

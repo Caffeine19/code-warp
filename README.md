@@ -71,6 +71,17 @@ Initial release with basic functionality:
 - Context menu integration for both options
 - Command palette support for both options
 
+## Roadmap
+
+We're continuously working to improve the Warp Terminal extension. Here are some features we're planning to add:
+
+- [ ] **Warp Preview Support** - Add support for Warp preview builds with `warppreview://` URI scheme
+- [ ] **Launch Configurations Sidebar** - Add a dedicated sidebar panel to manage and display launch configurations
+- [ ] **Configuration Search** - Support searching and filtering launch configurations through the command palette
+- [ ] **Active Tab Integration** - Add functionality to open the currently active tab/file location in Warp
+
+Have a feature request? Feel free to [open an issue](https://github.com/Caffeine19/code-warp/issues) or contribute to the project!
+
 ## Development
 
 To work on this extension:
