@@ -9,11 +9,6 @@ A VS Code extension that allows you to open Warp terminal in a new window with t
 - **Context Menu Integration**: Right-click on files/folders in the Explorer or editor to open Warp with that specific path
 - **Command Palette Support**: Use `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac) and search for "Open Warp Terminal" commands
 
-## Requirements
-
-- [Warp Terminal](https://www.warp.dev/) must be installed on your system
-- Warp must support URI schemes (standard installation includes this)
-
 ## Usage
 
 ### Method 1: Command Palette
@@ -49,17 +44,6 @@ This extension uses Warp's URI schemes to open terminal sessions with the specif
 
 The implementation is based on the [Raycast Warp extension](https://github.com/raycast/extensions/blob/main/extensions/warp/src/uri.ts).
 
-## Extension Settings
-
-This extension contributes the following settings:
-
-- No additional settings required - works out of the box with Warp's default installation
-
-## Known Issues
-
-- Requires Warp terminal to be installed and properly configured
-- URI scheme support must be enabled in Warp (enabled by default)
-
 ## Release Notes
 
 ### 0.0.1
@@ -73,7 +57,7 @@ Initial release with basic functionality:
 
 ## Roadmap
 
-We're continuously working to improve the Warp Terminal extension. Here are some features we're planning to add:
+I am continuously working to improve the Warp Terminal extension. Here are some features we're planning to add:
 
 - [ ] **Warp Preview Support** - Add support for Warp preview builds with `warppreview://` URI scheme
 - [ ] **Launch Configurations Sidebar** - Add a dedicated sidebar panel to manage and display launch configurations
@@ -91,10 +75,6 @@ To work on this extension:
 3. Open in VS Code
 4. Press `F5` to launch a new Extension Development Host window
 5. Test the extension commands
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
