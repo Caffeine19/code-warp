@@ -22,6 +22,24 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "Warp Terminal",
+      "properties": {
+        "warp-terminal.warpVersion": {
+          "type": "string",
+          "enum": [
+            "stable",
+            "preview"
+          ],
+          "default": "stable",
+          "description": "Select which version of Warp to use",
+          "enumDescriptions": [
+            "Use stable Warp release (warp://)",
+            "Use Warp preview build (warppreview://)"
+          ]
+        }
+      }
+    },
     "commands": [
       {
         "command": "warp-terminal.openInNewWindow",

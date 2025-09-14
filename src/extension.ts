@@ -1,13 +1,19 @@
 import * as vscode from "vscode";
 
+type WarpVersion = "stable" | "preview";
+
 /**
  * Generate Warp URI for the specified action and path
  * Based on: https://github.com/raycast/extensions/blob/d480d47a5c3271f36134614ecdc49b2d447bccf2/extensions/warp/src/uri.ts
  */
 function getWarpUri(action: "new_window" | "new_tab", path: string): string {
-  // Use warp:// scheme for standard Warp app
-  // Could be extended to support warppreview:// for preview builds
-  const scheme = "warp://";
+  // Get the configured Warp version from settings
+  const config = vscode.workspace.getConfiguration('warp-terminal');
+  const warpVersion = config.get<WarpVersion>('warpVersion', 'stable');
+  
+  // Use appropriate scheme based on user configuration
+  const scheme = warpVersion === 'preview' ? 'warppreview://' : 'warp://';
+  
   return `${scheme}action/${action}?path=${encodeURIComponent(path)}`;
 }
 
