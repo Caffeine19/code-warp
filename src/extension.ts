@@ -1,96 +1,70 @@
 import * as vscode from "vscode";
-
-type WarpVersion = "stable" | "preview";
-
-/**
- * Generate Warp URI for the specified action and path
- * Based on: https://github.com/raycast/extensions/blob/d480d47a5c3271f36134614ecdc49b2d447bccf2/extensions/warp/src/uri.ts
- */
-function getWarpUri(action: "new_window" | "new_tab", path: string): string {
-  // Get the configured Warp version from settings
-  const config = vscode.workspace.getConfiguration('warp-terminal');
-  const warpVersion = config.get<WarpVersion>('warpVersion', 'stable');
-  
-  // Use appropriate scheme based on user configuration
-  const scheme = warpVersion === 'preview' ? 'warppreview://' : 'warp://';
-  
-  return `${scheme}action/${action}?path=${encodeURIComponent(path)}`;
-}
+import { getWarpActionUri } from "./uri";
 
 /**
  * Get the workspace folder path for the current context
  */
-function getWorkspacePath(uri?: vscode.Uri): string {
-  if (uri) {
-    // If we have a specific URI (e.g., from context menu), use its folder
-    const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
-    if (workspaceFolder) {
-      return workspaceFolder.uri.fsPath;
-    }
-    // If no workspace folder found, use the directory of the file
-    if (uri.scheme === "file") {
-      const path = require("path");
-      return path.dirname(uri.fsPath);
-    }
+const getWorkspacePath = (uri?: vscode.Uri): string => {
+  const homedir = require("os").homedir();
+
+  if (!uri) {
+    return homedir;
+  }
+
+  // If we have a specific URI (e.g., from context menu), use its folder
+  const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
+  if (workspaceFolder) {
+    return workspaceFolder.uri.fsPath;
+  }
+
+  // If no workspace folder found, use the directory of the file
+  if (uri.scheme === "file") {
+    const path = require("path");
+    return path.dirname(uri.fsPath);
   }
 
   // Fallback to first workspace folder
-  if (
-    vscode.workspace.workspaceFolders &&
-    vscode.workspace.workspaceFolders.length > 0
-  ) {
+  if (vscode.workspace.workspaceFolders?.length) {
     return vscode.workspace.workspaceFolders[0].uri.fsPath;
   }
 
-  // Last resort: use home directory
-  const os = require("os");
-  return os.homedir();
-}
-
-/**
- * Open Warp terminal with the specified action and path
- */
-async function openWarp(
-  action: "new_window" | "new_tab",
-  uri?: vscode.Uri
-): Promise<void> {
-  try {
-    const workspacePath = getWorkspacePath(uri);
-    const warpUri = getWarpUri(action, workspacePath);
-    const actionName = action === "new_window" ? "window" : "tab";
-
-    console.log(`Opening Warp ${actionName} with path: ${workspacePath}`);
-    console.log(`Warp URI: ${warpUri}`);
-
-    const success = await vscode.env.openExternal(vscode.Uri.parse(warpUri));
-
-    if (!success) {
-      vscode.window.showErrorMessage(
-        "Failed to open Warp terminal. Make sure Warp is installed and supports URI schemes."
-      );
-    }
-  } catch (error) {
-    console.error("Error opening Warp terminal:", error);
-    vscode.window.showErrorMessage(
-      `Error opening Warp terminal: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`
-    );
-  }
-}
+  return homedir;
+};
 
 /**
  * Open Warp terminal in a new window with the specified path
  */
 async function openWarpInNewWindow(uri?: vscode.Uri): Promise<void> {
-  return openWarp("new_window", uri);
+  const workspacePath = getWorkspacePath(uri);
+  const warpUri = getWarpActionUri.newWindow(workspacePath);
+  console.log(`Opening Warp window with path: ${workspacePath}`);
+  console.log(`Warp URI: ${warpUri}`);
+
+  const success = await vscode.env.openExternal(vscode.Uri.parse(warpUri));
+
+  if (!success) {
+    vscode.window.showErrorMessage(
+      "Failed to open Warp terminal. Make sure Warp is installed and supports URI schemes.",
+    );
+  }
 }
 
 /**
  * Open Warp terminal in a new tab with the specified path
  */
 async function openWarpInNewTab(uri?: vscode.Uri): Promise<void> {
-  return openWarp("new_tab", uri);
+  const workspacePath = getWorkspacePath(uri);
+  const warpUri = getWarpActionUri.newTab(workspacePath);
+  console.log(`Opening Warp tab with path: ${workspacePath}`);
+  console.log(`Warp URI: ${warpUri}`);
+
+  const success = await vscode.env.openExternal(vscode.Uri.parse(warpUri));
+
+  if (!success) {
+    vscode.window.showErrorMessage(
+      "Failed to open Warp terminal. Make sure Warp is installed and supports URI schemes.",
+    );
+  }
 }
 
 export function activate(context: vscode.ExtensionContext) {
@@ -99,12 +73,12 @@ export function activate(context: vscode.ExtensionContext) {
   // Register the commands
   const disposableWindow = vscode.commands.registerCommand(
     "warp-terminal.openInNewWindow",
-    openWarpInNewWindow
+    openWarpInNewWindow,
   );
 
   const disposableTab = vscode.commands.registerCommand(
     "warp-terminal.openInNewTab",
-    openWarpInNewTab
+    openWarpInNewTab,
   );
 
   context.subscriptions.push(disposableWindow, disposableTab);
