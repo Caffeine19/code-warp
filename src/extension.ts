@@ -6,8 +6,9 @@ import { getWarpActionUri } from "./uri";
  */
 const getWorkspacePath = (uri?: vscode.Uri): string => {
   const homedir = require("os").homedir();
-
+  
   if (!uri) {
+    // Should just throw an error 
     return homedir;
   }
 
@@ -24,6 +25,8 @@ const getWorkspacePath = (uri?: vscode.Uri): string => {
   }
 
   // Fallback to first workspace folder
+  // Should handle multi root workspace, if length equals 0, just use the first one 
+  // If the length lg then 1, should show a picked, let the user choose the entry 
   if (vscode.workspace.workspaceFolders?.length) {
     return vscode.workspace.workspaceFolders[0].uri.fsPath;
   }
